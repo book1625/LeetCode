@@ -835,13 +835,484 @@ namespace LeetCode
             return -1;
 		}
 
+        //171. Excel Sheet Column Number
+		public int TitleToNumber(string s)
+		{
+			int result = 0;
+
+			int pow = s.Length - 1;
+			for (int i = 0; i < s.Length; i++)
+			{
+				result += (s[i] - 'A' + 1) * (int)Math.Pow(26, pow);
+				pow--;
+			}
+
+			return result;
+		}
+
+		//172. Factorial Trailing Zeroes
+        //這題很數學，所以寫一下說明， 0 是靠 2*5 得來的，2到處有，但5就不一定
+        //所以目標是計算 1-n 到底出現了多少個5的因數，所以一開始很天真的直接回傳 n/5
+        //結果我忘了，5的平方數都不只擁有一個5，而10的倍數也會隨著放大而有更多的5
+        //如果要一路除過去，也是算的出來，但沒有 logn ...
+        //再來就神了，你先用 n/5 算一次，答案一定不夠的，前面大的數有多的 5 都沒算到
+        //這時你把整個 n! 每個元素都拿掉一個5(你剛算過了)，你會發現它很神奇的變成 (n/5)!
+        //所以你就遞迴的再來一次把缺算的拿進來，直到沒得除… Orz...
+		public int TrailingZeroes(int n)
+		{
+			if (n == 0)
+			{
+				return 0;
+			}
+			else
+			{
+				return n / 5 + TrailingZeroes(n / 5);
+			}
+		}
+
+		//189. Rotate Array
+        //解答裡有個 reverse 法很聰明可以學一下
+        //只是要自己寫 reverse
+        //三步驟，全部 reverse ，前半reverse, 後半 reverse
+        //O(n) & O(1) good~
+		public static void Rotate(int[] nums, int k)
+		{
+            k = k % nums.Length;
+
+            int[] temp = new int[nums.Length];
+            Array.Copy(nums, nums.Length-k, temp , 0, k);
+            Array.Copy(nums, 0, temp, k, nums.Length - k);
+            Array.Copy(temp,nums,temp.Length);
+		}
+
+		//190. Reverse Bits
+		//這裡要注意運算子優先權，shift 比+-還小 不能寫在同一行，會先加再 shift
+        //https://msdn.microsoft.com/en-us/library/aa691323(v=vs.71).aspx
+		public static uint reverseBits(uint n)
+		{
+            uint result = 0;
+            for (int i = 0; i < 32; i++ )
+            {
+                uint temp = n & ((uint)1 << i);
+                if(temp > 0)
+                {
+                    result = result << 1;
+                    result++;
+                }
+                else
+                {
+                    result = result << 1;
+                }
+            }
+            return result;
+		}
+
+		//191. Number of 1 Bits
+		public int HammingWeight(uint n)
+		{
+			int result = 0;
+			for (int i = 0; i < 32; i++)
+			{
+				uint temp = n & ((uint)1 << i);
+				if (temp > 0)
+				{					
+					result++;
+				}
+			}
+			return result;
+		}
+
+		//198. House Robber
+        //這題 dp 沒想完真的可惜了，我都走到最後一動了
+        //建立一個二維的狀態 dp，分別代表「有我」，「無我」
+        //「有我」的值，必從前一個「無我」來，而「無我」值，則前面的有無沒關系，所以選個大的
+        //我錯在 「無我必從前一個有我而來…」
+		public static int Rob(int[] nums)
+		{
+            if (nums.Length ==0)
+            {
+                return 0;
+            }
+
+            int[,] dp = new int[2, nums.Length];
+			dp[0, 0] = nums[0];
+			int len = nums.Length;
+			for (int i = 1; i < len; i++)
+			{
+				dp[0, i] = dp[1, i - 1] + nums[i];
+                dp[1, i] = Math.Max(dp[0, i - 1], dp[1, i - 1]);
+			}
+
+			return Math.Max(dp[0, len - 1], dp[1, len - 1]);
+		}
+
+		//202. Happy Number
+		private static int getDigiSum(int n)
+        {
+            int total = 0;
+            int quot = 0;
+            int rem;
+            do
+            {
+                quot = Math.DivRem(n, 10, out rem);
+                n = quot;
+                total += (int)Math.Pow(rem, 2);
+            }while(quot > 0);
+
+            return total;
+        }
+
+		public static bool IsHappy(int n)
+		{
+            HashSet<int> hs = new HashSet<int>();
+            hs.Add(n);
+
+            while(n > 1)
+            {
+                n = getDigiSum(n);
+
+                if(n == 1)
+                {
+                    return true;
+                }
+                else
+                {
+					if (!hs.Contains(n))
+					{
+                        hs.Add(n);
+					}
+                    else
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            //impossible
+            return true;
+		}
+
+		//204. Count Primes
+		public static int CountPrimes(int n)
+		{
+            if(n < 2)
+            {
+                return 0;
+            }
+
+            int[] primeTb = new int[n];
+            primeTb[0] = 1;
+            primeTb[1] = 1;
+
+            int ind = 2;
+            while( (long)ind * ind <= n)
+            {
+                for (int i = ind * ind; i < primeTb.Length; i+=ind)
+                {
+                    primeTb[i] = 1;
+                }
+                ind++;
+            }
+
+            return primeTb.Where(x => x == 0).Count();
+        }
+
+		//206. Reverse Linked List
+		public static ListNode ReverseList(ListNode head)
+		{
+            if(head == null)
+            {
+                return head;
+            }
+
+            ListNode tempHead = head;
+            ListNode tempNext = head.next;
+            head.next = null;
+
+            while(tempNext != null)
+            {
+                ListNode temp = tempNext.next;
+                tempNext.next = tempHead;
+                tempHead = tempNext;
+                tempNext = temp;
+            }
+
+            return tempHead;
+		}
+
+		//217. Contains Duplicate
+		public bool ContainsDuplicate(int[] nums)
+		{
+            HashSet<int> hs = new HashSet<int>();
+            foreach(var num in nums)
+            {
+                if(hs.Contains(num))
+                {
+                    return true;
+                }
+                else
+                {
+                    hs.Add(num);
+                }
+            }
+
+            return false;
+		}
+
+		//234. Palindrome Linked List
+		public static bool IsPalindrome(ListNode head)
+		{
+			//找到中間點前後
+			int count = 0;
+			ListNode temp = head;
+			while (temp != null)
+			{
+				count++;
+				temp = temp.next;
+			}
+
+			if (count < 2)
+			{
+				return true;
+			}
+
+			int tar = count % 2 == 0 ? count / 2 + 1 : count / 2 + 2;
+
+			temp = head;
+			while (tar > 1)
+			{
+				temp = temp.next;
+				tar--;
+			}
+
+			//反轉後半
+			temp = ReverseList(temp);
+
+			//比對前半與後半所有 node
+			while (temp != null)
+			{
+				if (temp.val != head.val)
+				{
+					return false;
+				}
+				temp = temp.next;
+				head = head.next;
+			}
+
+			return true;
+		}
+
+		//237. Delete Node in a Linked List
+        //這題，反而讓我沒想到，不常寫 Linked List 的人應該都不昜想到
+        //如果該 node 是一個複雜物件，含蓋多層指標，那我認為這樣作也是危險的
+        //物件的 clone 不是一件簡單的事
+		public void DeleteNode(ListNode node)
+		{
+			node.val = node.next.val;
+			node.next = node.next.next;
+		}
+
+		public static bool IsAnagram(string s, string t)
+		{
+            if(s.Length != t.Length)
+            {
+                return false;
+            }
+
+            if(s.Length == 0)
+            {
+                return true;
+            }
+
+            int[,] count = new int[2, 26];
+
+            for (int i = 0; i < s.Length; i++)
+            {
+                count[0, s[i] - 'a']++;
+                count[1, t[i] - 'a']++;
+            }
+
+            for (int i = 0; i < 26; i++)
+            {
+                if(count[0,i] != count[1,i])
+                {
+                    return false;
+                }
+            }
+
+            return true;
+		}
+
+        //268. Missing Number
+        //這題就是現學現賣了，利用 xor 來找不重覆的值
+		public static int MissingNumber(int[] nums)
+		{
+            if(nums.Length == 0)
+            {
+                return 0;
+            }
+
+            int sum = nums[0];
+            for (int i = 1; i < nums.Length; i++)
+            {
+                sum ^= nums[i];
+            }
+
+            for (int i = 0; i <= nums.Length; i++ )
+            {
+                sum ^= i;
+            }
+
+            return sum;
+		}
+
+        //283. Move Zeroes
+		public static void MoveZeroes(int[] nums)
+		{
+            /*
+			 * 這個解法有點長
+
+
+			 if(nums.Length < 2)
+			 {
+				 return;
+			 }
+
+			 int curr = 0;
+			 int notZero = 0;
+			 Action moveNotZero = () =>
+			 {
+				 if(notZero < curr)
+				 {
+					 notZero = curr + 1;
+				 }
+
+				 while (notZero < nums.Length && nums[notZero] == 0)
+				 {
+					 notZero++;
+				 }
+			 };
+
+
+			 moveNotZero();
+
+			 while(notZero < nums.Length && curr < nums.Length )
+			 {
+				 if(nums[curr] == 0)
+				 {
+					 nums[curr] = nums[notZero];
+					 nums[notZero] = 0;
+				 }
+				 curr++;
+				 moveNotZero();
+			 }
+			 */
+
+
+            for (int curr = 0, lastZero = 0; curr < nums.Length; curr++)
+            {
+                if(nums[curr] != 0)
+                {
+                    //不能這樣寫的原因是，如果第一個位置不是0
+                    //lastzero 在第一動是無效的，不真的指在 0 上面
+                    //這時你其實會因為這樣把第一個蓋掉，如果第一個值是 0
+                    //則答案就會對… 
+                    //nums[lastZero] = nums[curr];
+                    //lastZero++;
+                    //nums[curr] = 0;
+
+                    int temp = nums[lastZero];
+                    nums[lastZero] = nums[curr];
+                    nums[curr] = temp;
+                    lastZero++;
+                }
+            }
+		}
+
+		//326. Power of Three
+		public bool IsPowerOfThree(int n)
+		{
+            /* 弱 …
+			if (n <= 0)
+			{
+				return false;
+			}
+
+			while (n > 1)
+			{
+				if (n % 3 == 0)
+				{
+					n = n / 3;
+				}
+				else
+				{
+					return false;
+				}
+			}
+
+			return true;
+			*/
+
+            //解答裡的方法，我最愛這個，有兩個看不懂，用字串和log的不好理解
+            //由於數字不大於int，然後3又是個質數，這造成 3 的 power 都沒有其它的質因數分解
+            //所以 3**n 必債 3**m 的因數 當 m >= n
+            //所以拿 3**19 來通殺所有 int 中的可能
+            //這招對 2 5 7 11 ... 等質數的次方，也有效
+            return (n > 0) && ((int)Math.Pow(3, 19) % 3 == 0);
+		}
 
 		public static void Main(string[] args)
         {
-            IsPalindrome("123");
+			int[] temp = new int[] { 0, 1, 0, 1 };
+			MoveZeroes(temp);
+			Console.WriteLine(string.Join(",", temp));
+			
+            temp = new int[] { 1, 0 };
+			MoveZeroes(temp);
+			Console.WriteLine(string.Join(",", temp));
 
-            IsPalindrome("A man, a plan, a canal: Panama");
-            IsPalindrome("race a car");
+			temp = new int[] { 0, 0 };
+			MoveZeroes(temp);
+			Console.WriteLine(string.Join(",", temp));
+
+			temp = new int[] { 1, 1 };
+			MoveZeroes(temp);
+			Console.WriteLine(string.Join(",", temp));
+
+			temp = new int[] { 0, 1 };
+			MoveZeroes(temp);
+			Console.WriteLine(string.Join(",", temp));
+
+            temp = new int[] { 0, 1, 0, 3, 12 };
+            MoveZeroes(temp);
+            Console.WriteLine(string.Join(",",temp));
+
+
+            //int[,] count = new int[2, 26];
+
+            //Console.WriteLine(count.Length);
+            //Console.WriteLine(count.GetLength(0));
+            //Console.WriteLine(count.GetLength(1));
+
+
+            //IsAnagram("nl", "cx");
+
+            //ListNode temp1 = new ListNode(1);
+            //ListNode temp2 = new ListNode(2);
+            //ListNode temp3 = new ListNode(1);
+            //temp1.next = temp2;
+            //temp2.next = temp3;
+            //temp3.next = null;
+            //IsPalindrome(temp1);
+
+            //Console.Write(CountPrimes(3)); 
+            //getDigiSum(0);
+            //Rob(new int[] { 1, 2, 8, 8, 2, 2 });
+            //reverseBits(43261596);
+            //Rotate(new int[] { 1, 2, 3, 4, 5, 6, 7 }, 7);
+            //IsPalindrome("123");
+            //IsPalindrome("A man, a plan, a canal: Panama");
+            //IsPalindrome("race a car");
             //MaxProfit2(new int[] { 1, 2, 3, 4, 5 });
 
             //Generate(5);
