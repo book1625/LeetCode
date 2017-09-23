@@ -34,6 +34,9 @@
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Easy\InterviewList.cs" />
+    <Compile Include="PublicDataStructure.cs" />
+    <Compile Include="Medium\InterviewList.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Easy\" />
