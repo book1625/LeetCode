@@ -38,6 +38,7 @@
     <Compile Include="PublicDataStructure.cs" />
     <Compile Include="Medium\InterviewList.cs" />
     <Compile Include="Medium\InterviewList2.cs" />
+    <Compile Include="Medium\InterviewList3.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Easy\" />
