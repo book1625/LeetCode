@@ -471,16 +471,16 @@ namespace LeetCode.Medium
             return -1;
 		}
 
-        //166. Fraction to Recurring Decimal
-        //https://zh.wikipedia.org/wiki/%E7%84%A1%E7%90%86%E6%95%B8
+		//166. Fraction to Recurring Decimal
+		//https://zh.wikipedia.org/wiki/%E7%84%A1%E7%90%86%E6%95%B8
         //這個題目我實在是無力了，連看解答都要看半天，這基本上就是數學問題，用程式模擬小數除法
         //上面的連結是在說明無理數，而這題是遇不到無理數的，因為無理數沒辦法寫成兩個整數的除法
         //所以，小數只有除盡和循環兩種狀態，不用怕，不然你也寫不出來… 
         //真正不好理解的是，當餘數開始重覆時，表示你會開始進入第一次的重覆，而這個餘數，包含了你一開始為了算整數部份除下來的那個，這個太容易略過了…
         //另外，除到是 0就整除了，但別把0拿去建字典，它是沒有發動循環的可能性
         //在循環前可能會有幾個不重覆的商 8/55 就是一例，這種一定要試到
-        public string FractionToDecimal(int numerator, int denominator)
-        {
+		public string FractionToDecimal(int numerator, int denominator)
+		{
             //0 就別算了，一不小心還會輸出負號成bug
             if (numerator == 0)
             {
@@ -490,7 +490,7 @@ namespace LeetCode.Medium
             string result = "";
 
             //強大的判斷異號，可以記下來
-            if (numerator < 0 ^ denominator < 0)
+            if( numerator < 0 ^ denominator < 0)
             {
                 result = "-";
             }
@@ -503,12 +503,12 @@ namespace LeetCode.Medium
             long rem;
             long qot;
             qot = Math.DivRem(num, den, out rem);
-            result = string.Format("{0}{1}{2}", result, qot, rem == 0 ? "" : ".");
-
+            result = string.Format("{0}{1}{2}", result, qot, rem==0 ? "" : ".");
+         
             //用它來背有出現過的餘數
             Dictionary<long, int> remToDenMap = new Dictionary<long, int>();
 
-            while (!remToDenMap.ContainsKey(rem) && rem != 0)
+            while(!remToDenMap.ContainsKey(rem) && rem != 0)
             {
                 //第一次的餘數，會因為這行而有記到，記的對應值是字串的當前長度，為了方便等一下插括號用的
                 remToDenMap.Add(rem, result.Length);
@@ -518,7 +518,7 @@ namespace LeetCode.Medium
                 //這裡最鬼的是，先用了才決定有沒有重覆，這點我也不會說明，是試case 試出來的
                 rem *= 10;
                 qot = Math.DivRem(rem, den, out rem);
-                result += qot;
+				result += qot;
             }
 
             //如果有非0的重覆發生，就可以去找它上次發生的位置，插括號
@@ -529,7 +529,7 @@ namespace LeetCode.Medium
                 result += ")";
             }
 
-            return result;
-        }
+			return result;
+		}		
     }
 }
