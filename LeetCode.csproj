@@ -40,6 +40,7 @@
     <Compile Include="Medium\InterviewList2.cs" />
     <Compile Include="Medium\InterviewList3.cs" />
     <Compile Include="Medium\InterviewList4.cs" />
+    <Compile Include="Medium\InterviewList5.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Easy\" />
