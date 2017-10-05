@@ -314,40 +314,9 @@ namespace LeetCode.Medium
             return dp.Max();
         }
 
-		//322. Coin Change
-        //這題在 codility 上有作過很像的，它這裡硬幣是傳入的，所以寫時要依 coin 作迴圈，沒辦法開死陣列
-        //而且它有考你換不到，所以你不只每個數進來要考慮所有 coin ，還要考慮換不到時如何記下判定
-		public int CoinChange(int[] coins, int amount)
-		{
-            int[] dp = new int[amount + 1];
-            dp[0] = 0;
-            for (int i = 1; i < dp.Length; i++)
-            {
-                int minChange = int.MaxValue;
-                foreach (var co in coins)
-                {
-                    if (i >= co && dp[i-co] >= 0)
-                    {
-                        minChange = Math.Min(minChange, dp[i - co] + 1);
-                    }
-                }
-
-                if (minChange != int.MaxValue)
-                {
-                    dp[i] = minChange;
-                }
-                else
-                {
-                    dp[i] = -1;
-                }
-            }
-
-            return dp[amount];
-		}
-
 		/* 
-		public int LengthOfLIS(int[] nums)
-		{
+        public int LengthOfLIS(int[] nums)
+        {
             //這個 DP 解，可以通過一半以上的測試，而且 O(n)
             //但是 死在 [4,10,4,3,8,9] 這組測試，第二個4出現時，選不選就和前面那個4有關
             //但我無法在 dp 時檢查它，因為我手上的兩個數字分別是所有元素選或不選的最佳結果
@@ -383,76 +352,38 @@ namespace LeetCode.Medium
             }
 
             return Math.Max(meIn.Max(), meOut.Max());
+        }       
+        */
+
+		//322. Coin Change
+		//這題在 codility 上有作過很像的，它這裡硬幣是傳入的，所以寫時要依 coin 作迴圈，沒辦法開死陣列
+		//而且它有考你換不到，所以你不只每個數進來要考慮所有 coin ，還要考慮換不到時如何記下判定
+		public int CoinChange(int[] coins, int amount)
+		{
+            int[] dp = new int[amount + 1];
+            dp[0] = 0;
+            for (int i = 1; i < dp.Length; i++)
+            {
+                int minChange = int.MaxValue;
+                foreach (var co in coins)
+                {
+                    if (i >= co && dp[i-co] >= 0)
+                    {
+                        minChange = Math.Min(minChange, dp[i - co] + 1);
+                    }
+                }
+
+                if (minChange != int.MaxValue)
+                {
+                    dp[i] = minChange;
+                }
+                else
+                {
+                    dp[i] = -1;
+                }
+            }
+
+            return dp[amount];
 		}		
-		*/
-
-		public static void Test()
-		{
-			InterviewList obj = new InterviewList();
-
-
-            Console.WriteLine(obj.CoinChange(new int[] { 2 }, 3));
-
-
-            //Console.Write(temp);
-			//----------------------------------------------------------
-
-			var tree = new TreeNode(4) { left = new TreeNode(2) { left = new TreeNode(1), right = new TreeNode(3) }, right = new TreeNode(6) 
-                { left = new TreeNode(5), right = new TreeNode(7) } };
-
-			var tree2 = new TreeNode(4) { left = new TreeNode(2) { left = new TreeNode(1) { left = new TreeNode(3) { left = new TreeNode(7) 
-                { left = new TreeNode(9) } } } } };
-
-
-			//var temp = obj.NumIslands(new char[,] {
-			//  {'1','1','1','0'},
-			//  {'0','0','1','0'},
-			//  {'0','0','1','0'},
-			//  {'0','1','1','0'},
-			//});
-
-			//var temp = obj.IsValidSudoku(new char[,]
-			//{
-			//    {'.','2','3','4','5','6','7','8','9'},
-			//    {'8','.','.','.','.','.','.','.','.'},
-			//    {'7','.','.','.','.','.','.','.','.'},
-			//    {'6','.','.','.','.','.','.','.','.'},
-			//    {'5','.','.','.','.','.','.','.','.'},
-			//    {'4','.','.','.','.','.','.','.','.'},
-			//    {'3','.','.','.','.','.','.','.','.'},
-			//    {'2','.','.','.','.','.','.','.','.'},
-			//    {'.','.','.','.','.','.','.','.','.'}
-			//}); 
-
-			//var temp = obj.SearchMatrix(new int[,]
-			//{
-
-			//	{5,   6,  9, 14, 17, 17, 19},
-			//	{8,  10, 14, 15, 21, 24, 28},
-			//	{8,  10, 16, 21, 21, 26, 33},
-			//	{13, 17, 17, 23, 26, 27, 33},
-			//	{16, 22, 23, 27, 31, 31, 34},
-			//	{16, 26, 28, 30, 32, 32, 37},
-			//	{19, 31, 35, 35, 39, 44, 44},
-			//	{20, 31, 39, 44, 48, 51, 52},
-			//	{23, 36, 40, 47, 51, 51, 53},
-
-			//}, 45);
-		}
-
-		private void BST_DFS(TreeNode root, List<int> bTree)
-		{
-			if (root == null)
-			{
-				return;
-			}
-			else
-			{
-				//PreOrder
-				bTree.Add(root.val);
-				BST_DFS(root.left, bTree);
-				BST_DFS(root.right, bTree);
-			}
-		}
 	}
 }
