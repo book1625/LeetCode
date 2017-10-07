@@ -48,7 +48,6 @@
     <Compile Include="InterviewList\ObjectOriented.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Medium\" />
     <Folder Include="InterviewList\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
