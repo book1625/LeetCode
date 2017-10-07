@@ -34,19 +34,22 @@
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Easy\InterviewList.cs" />
     <Compile Include="PublicDataStructure.cs" />
-    <Compile Include="Medium\InterviewList1.cs" />
-    <Compile Include="Medium\InterviewList2.cs" />
-    <Compile Include="Medium\InterviewList3.cs" />
-    <Compile Include="Medium\InterviewList4.cs" />
-    <Compile Include="Medium\InterviewList5.cs" />
-    <Compile Include="Medium\InterviewList6.cs" />
-    <Compile Include="Medium\InterviewList7.cs" />
+    <Compile Include="InterviewList\ArrayOP.cs" />
+    <Compile Include="InterviewList\LinkedListOP.cs" />
+    <Compile Include="InterviewList\DynaminProgramming.cs" />
+    <Compile Include="InterviewList\TreeOP.cs" />
+    <Compile Include="InterviewList\PrimeQuestion.cs" />
+    <Compile Include="InterviewList\StringOP.cs" />
+    <Compile Include="InterviewList\MathFunction.cs" />
+    <Compile Include="InterviewList\BitsOP.cs" />
+    <Compile Include="InterviewList\Jump.cs" />
+    <Compile Include="InterviewList\Graph.cs" />
+    <Compile Include="InterviewList\ObjectOriented.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Easy\" />
     <Folder Include="Medium\" />
+    <Folder Include="InterviewList\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
