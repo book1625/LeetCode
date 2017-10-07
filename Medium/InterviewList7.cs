@@ -356,11 +356,221 @@ namespace LeetCode.Medium
 		}
 		*/
 
+		//380. Insert Delete GetRandom O(1)
+        //這也不是我的功勞，是 hashtable 的強大
+        //我只是接口，另外，ElementAt 是linq提供的，我不確定它是 O(1)
+        //如果集合對像有實作 IList，就會靠 index 作到 O(1)，但我看 HashSet 是沒有
+        //所以多數的解答都會靠多一個 List 來解決
+		public class RandomizedSet
+		{
+            private HashSet<int> data;
+            Random rand;
+			
+			public RandomizedSet()
+			{
+                data = new HashSet<int>();
+                rand = new Random(Environment.TickCount);
+			}
 
+			public bool Insert(int val)
+			{
+                if (data.Contains(val))
+                {
+                    return false;
+                }
+                else
+                {
+                    data.Add(val);
+                    return true;
+                }
+			}
+            			
+			public bool Remove(int val)
+			{
+                if (data.Contains(val))
+                {
+                    data.Remove(val);
+                    return true;
+                }
+                return false;
+			}
+            			
+			public int GetRandom()
+			{
+                int ind = rand.Next() % data.Count();
+                return data.ElementAt(ind);
+			}
+		}
+		
+        //384. Shuffle an Array
+		public class Solution
+		{
+            private int[] original;
+            private int[] currNums;
+            //這個 random 寫在這裡很重要我現在才理解
+            //如果我們用同一個 tick 去建 random ，那它拿出來的數列是一樣的
+            //所以如果每次都重建，則要保證 tick 不同，但是，我沒辦法保證我不會被狂連呼!!
+            //所以這個 random 只能建一次，這樣至少保證這個物件自己是 random 有效
+            //但如果有人狂建這種物件，那… 很可能有一堆人是用同一個 tick，那就死定了…
+            Random rand = new Random(Environment.TickCount);
+
+			public Solution(int[] nums)
+			{
+                original = nums;
+                currNums = new int[nums.Length];
+                Array.Copy(nums, currNums, nums.Length);
+			}
+
+			public int[] Reset()
+			{
+                Array.Copy(original, currNums, original.Length);
+                return currNums;
+			}
+
+			public int[] Shuffle()
+			{
+                for (int i = 0; i < currNums.Length; i++)
+                {
+                    //random a position to swap eachother
+                    int ind = rand.Next() % currNums.Length;
+                    int temp = currNums[i];
+                    currNums[i] = currNums[ind];
+                    currNums[ind] = temp;
+                }
+                return currNums;
+			}
+		}
+
+		//395. Longest Substring with At Least K Repeating Characters
+		//這個寫法是看別人的，它的主要精神是，只要子字串裡的重覆字元統計都至少有k個
+		//那這個子字串就有效了，如果子字串的長度根本不到k，那也不需要管它
+		//真的比較難思考的是，把子字串用不到k次的字元開，去找它的所有子字串能建出的最長
+		//我一開始的寫法就是對不到k次字元所開的所有子字串都送進去，也就是那個 gp 我是 foreach g 來的
+		//但這樣時間爆炸，根本跑不完…
+		//後來我看了一下他們的說明，發現他們其實只拿出現最少的那個字元來切開，這點我一開始不太理解
+		//後來想了一下，如果我的字串是 abcd 我會分別用 a b c d 去切 
+		//而 a 切後要 bcd 
+		//而 b 切後要 a cd
+		//而 c 切後要 ab d
+        //而 d 切後要 abc
+        //然後他們後面又都還有…  很明顯的重覆的行為一堆，其實只要切最爛的那個，第二爛的也會在最爛的切割中最格為最爛的又拿去切，所以~ 沒必要處理
+		public int LongestSubstring(string s, int k)
+        {
+            if (s.Length < k)
+            {
+                return 0;
+            }
+
+            var g = s.GroupBy(c => c);
+            if (g.Where(gp => gp.Count() < k).Count() == 0)
+            {
+                return s.Length;
+            }
+            else
+            {
+                int maxlen = 0;
+                var gp = g.Where(gg => gg.Count() < k).OrderBy(gg => gg.Count()).First();
+
+                foreach (var substr in s.Split(gp.Key))
+                {
+                    maxlen = Math.Max(maxlen, LongestSubstring(substr, k));
+                }
+
+                return maxlen;
+            }
+        }
+
+        /* 這個寫法確定答案對，但是在測一個超大的 case 時 TLE 了…
+         * 我目前的寫法是 O(n*26) + O(n**2*26)
+		public int LongestSubstring(string s, int k)
+		{
+            int[,] map = new int[26, s.Length+1];
+            for (int si = 0; si < s.Length; si++)
+            {
+                for (int i = 0; i < map.GetLength(0); i++)
+                {
+                    map[i, si + 1] = map[i, si];
+                }
+                map[s[si] - 'a', si + 1]++;
+            }
+
+            int result = 0;
+            for (int i = map.GetLength(1) - 1; i > 0; i--)
+            {
+                for (int j = i - 1; j >= 0; j--)
+                {
+                    int goodSubLen = i - j;
+                    for (int c = 0; c < map.GetLength(0); c++)
+                    {
+                        if (map[c, i] - map[c, j] > 0 && map[c, i] - map[c, j] < k)
+                        {
+                            goodSubLen = 0;
+                            break;
+                        }
+                    }
+                    result = Math.Max(result, goodSubLen);
+                }
+            }
+            return result;
+		}
+		*/
+
+		//454. 4Sum II
+        //這題我一開始題目沒看清楚，一直用 n*n 陣列在想，所以算法也一直出不來
+        //中間也有想到是不是先兩條合併，但合完的結果就沒有減少
+        //後來看了別人的解法才發現，固定只有四陣列，只是長度長了點
+		public int FourSumCount(int[] A, int[] B, int[] C, int[] D)
+		{
+            Dictionary<int, int> counter = new Dictionary<int, int>();
+            int len = A.Length;
+            for (int i = 0; i < len; i++)
+            {
+                for (int j = 0; j < len; j++)
+                {
+                    int tar = A[i] + B[j];
+                    if (counter.ContainsKey(tar))
+                    {
+                        counter[tar]++;
+                    }
+                    else
+                    {
+                        counter[tar] = 1;
+                    }
+                }
+            }
+
+            int tuples = 0;
+            for (int i = 0; i < len; i++)
+            {
+                for (int j = 0; j < len; j++)
+                {
+                    int tar = -( C[i] + D[j] ) ;
+                    int tempCount;
+                    if (counter.TryGetValue(tar, out tempCount))
+                    {
+                        tuples += tempCount;
+                    }
+                }
+            }
+            return tuples;
+		}
 
 		public static void Test()
         {
             InterviewList obj = new InterviewList();
+            Console.WriteLine(obj.LongestSubstring("abcdedghijklmnopqrstuvwxyz", 2));
+            Console.WriteLine(obj.LongestSubstring("ababbc", 2));
+            Console.WriteLine(obj.LongestSubstring("abc", 2));
+            Console.WriteLine(obj.LongestSubstring("dababbccd", 2));
+            Console.WriteLine(obj.LongestSubstring("", 2));
+            Console.WriteLine(obj.LongestSubstring("a", 2));
+            Console.WriteLine(obj.LongestSubstring("aa", 2));
+            //obj.FourSumCount(
+            //    new int[] { -1, -1 },
+            //    new int[] { -1, 1 },
+            //    new int[] { -1, 1 },
+            //    new int[] { 1, -1 }
+            //);
 
             //        int[,] array = new int[,]
             //        {
@@ -379,7 +589,7 @@ namespace LeetCode.Medium
             //Console.WriteLine(obj.KthSmallest(array, 8));
             //Console.WriteLine(obj.KthSmallest(array, 9));
 
-            Console.WriteLine(obj.KthSmallest(new int[,] { { 2000000000 } }, 1));
+            //Console.WriteLine(obj.KthSmallest(new int[,] { { 2000000000 } }, 1));
 
 			//Console.Write(temp);
 
